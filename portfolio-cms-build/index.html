@@ -552,28 +552,46 @@
   }
   type();
 
-  // Load editable content from content/site.json (edited via /admin)
+  // Applies content data to the page — used both on normal load
+  // and for live preview updates coming from the /admin editor
+  function applyContent(data){
+    if(!data) return;
+    if(data.profile_photo){
+      const existingImg = document.querySelector('.profile-photo');
+      if(existingImg){
+        existingImg.src = data.profile_photo;
+      } else {
+        const slot = document.getElementById('profileSlot');
+        if(slot) slot.outerHTML = '<img class="profile-photo" src="' + data.profile_photo + '" alt="Profile photo">';
+      }
+    }
+    if(data.lead_paragraph) document.getElementById('leadParagraph').textContent = data.lead_paragraph;
+    if(data.about_paragraph_1) document.getElementById('aboutP1').textContent = data.about_paragraph_1;
+    if(data.about_paragraph_2) document.getElementById('aboutP2').textContent = data.about_paragraph_2;
+    if(data.about_paragraph_3) document.getElementById('aboutP3').textContent = data.about_paragraph_3;
+    if(data.contact_email){
+      document.getElementById('contactEmail').textContent = data.contact_email;
+      document.getElementById('emailCta').href = 'mailto:' + data.contact_email;
+    }
+    if(data.contact_phone) document.getElementById('contactPhone').textContent = data.contact_phone;
+    if(data.contact_linkedin) document.getElementById('contactLinkedin').textContent = data.contact_linkedin;
+    if(data.contact_github) document.getElementById('contactGithub').textContent = data.contact_github;
+    if(data.resume_link) document.getElementById('resumeLink').href = data.resume_link;
+  }
+
+  // Normal page load: pull the saved content file
   fetch('content/site.json?_=' + Date.now())
     .then(r => r.json())
-    .then(data => {
-      if(data.profile_photo){
-        const slot = document.getElementById('profileSlot');
-        slot.outerHTML = '<img class="profile-photo" src="' + data.profile_photo + '" alt="Profile photo">';
-      }
-      if(data.lead_paragraph) document.getElementById('leadParagraph').textContent = data.lead_paragraph;
-      if(data.about_paragraph_1) document.getElementById('aboutP1').textContent = data.about_paragraph_1;
-      if(data.about_paragraph_2) document.getElementById('aboutP2').textContent = data.about_paragraph_2;
-      if(data.about_paragraph_3) document.getElementById('aboutP3').textContent = data.about_paragraph_3;
-      if(data.contact_email){
-        document.getElementById('contactEmail').textContent = data.contact_email;
-        document.getElementById('emailCta').href = 'mailto:' + data.contact_email;
-      }
-      if(data.contact_phone) document.getElementById('contactPhone').textContent = data.contact_phone;
-      if(data.contact_linkedin) document.getElementById('contactLinkedin').textContent = data.contact_linkedin;
-      if(data.contact_github) document.getElementById('contactGithub').textContent = data.contact_github;
-      if(data.resume_link) document.getElementById('resumeLink').href = data.resume_link;
-    })
+    .then(applyContent)
     .catch(()=>{ /* falls back to the static defaults already in the HTML */ });
+
+  // Live preview mode: when embedded inside the /admin editor's preview pane,
+  // listen for content updates as the person types, before they even save
+  window.addEventListener('message', function(e){
+    if(e.data && e.data.type === 'decap-preview'){
+      applyContent(e.data.payload);
+    }
+  });
 
   // Scroll reveal
   const io = new IntersectionObserver((entries)=>{
