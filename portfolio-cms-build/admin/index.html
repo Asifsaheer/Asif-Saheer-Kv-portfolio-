@@ -6,6 +6,46 @@
   <title>Site Admin — Asif Saheer</title>
 </head>
 <body>
-  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  <script src="https://unpkg.com/decap-cms@3.3.3/dist/decap-cms.js"></script>
+  <script>
+    // Custom preview: renders the actual live site in an iframe and pushes
+    // every field change into it in real time, so editing feels like a
+    // real visual builder instead of a blank form.
+    var SitePreview = createClass({
+      postUpdate: function () {
+        var entry = this.props.entry;
+        var dataMap = entry.get('data');
+        var data = dataMap ? dataMap.toJS() : {};
+
+        // Resolve the profile photo (may be a locally-picked, unsaved file)
+        // into a real displayable URL using Decap's asset resolver
+        if (data.profile_photo && this.props.getAsset) {
+          var asset = this.props.getAsset(data.profile_photo);
+          data.profile_photo = asset ? asset.toString() : '';
+        }
+
+        var frame = this.refs.frame;
+        if (frame && frame.contentWindow) {
+          frame.contentWindow.postMessage({ type: 'decap-preview', payload: data }, '*');
+        }
+      },
+      componentDidMount: function () {
+        this.postUpdate();
+      },
+      componentDidUpdate: function () {
+        this.postUpdate();
+      },
+      render: function () {
+        return h('iframe', {
+          ref: 'frame',
+          src: '/index.html',
+          style: { width: '100%', height: '100vh', border: 'none' },
+          onLoad: this.postUpdate
+        });
+      }
+    });
+
+    CMS.registerPreviewTemplate('site', SitePreview);
+  </script>
 </body>
 </html>
