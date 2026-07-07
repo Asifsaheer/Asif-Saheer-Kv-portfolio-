@@ -1,6 +1,6 @@
 backend:
   name: git-gateway
-  repo: YOUR-GITHUB-USERNAME/YOUR-REPO-NAME      # e.g. asifsaheer/asif-portfolio
+  repo: Asifsaheer/Asif-Saheer-Kv-portfolio-
   branch: main
-  identity_url: https://auth.decapbridge.com/sites/YOUR-SITE-ID   # paste your real Site ID
+  identity_url: https://auth.decapbridge.com/sites/https://asifsaheerkv.netlify.app/
   gateway_url: https://gateway.decapbridge.com
