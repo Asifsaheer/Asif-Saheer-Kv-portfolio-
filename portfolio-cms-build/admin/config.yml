@@ -27,6 +27,8 @@ site_url: https://asifsaheerkv.netlify.app
 
 media_folder: "images/uploads"
 public_folder: "/images/uploads"
+media_library:
+  name: default
 
 
 collections:
