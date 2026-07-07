@@ -1,4 +1,4 @@
-# Use DecapBridge PKCE auth (required)
+# DecapBridge PKCE auth
 backend:
   name: git-gateway
   repo: Asifsaheer/Asif-Saheer-Kv-portfolio-
@@ -27,6 +27,8 @@ site_url: https://asifsaheerkv.netlify.app
 
 media_folder: "images/uploads"
 public_folder: "/images/uploads"
+media_library:
+  name: default
 
 collections:
   - name: "site"
@@ -35,6 +37,7 @@ collections:
       - name: "main"
         label: "Homepage Content"
         file: "content/site.json"
+        preview_path: ""
         fields:
           - { label: "Profile Photo", name: "profile_photo", widget: "image", required: false }
           - { label: "Hero Subtitle", name: "lead_paragraph", widget: "text" }
